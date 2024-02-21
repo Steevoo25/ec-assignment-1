@@ -28,18 +28,21 @@ def objective_function(solution) -> float:
     return -1
 # Returns an array of fitnesses aligned to population of solutions
 def calculate_fitness(population):
-
     fitnesses = []
     fitnesses[0] = {'0': (0,0)}
     
     for solution in population:
         fitnesses.append(objective_function(solution))
-
+    return fitnesses
+    
 def generate_population(solution):
     return -1
 
 #--- Initialisations
-population = []
+with open(DATA_FILE, "rb") as file:
+    solution = file.load()  
+    
+population = generate_population(solution)
 termination_flag = False
 t = 0
 fitnesses = calculate_fitness(population)
