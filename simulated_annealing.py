@@ -5,7 +5,7 @@ import math
 
 MAX_ITERATIONS = 100
 DATA_FILE = "us_capitals.pkl"
-END_OF_SOLUTION = 48
+SOLUTION_SIZE = 48
 #--- Definitions
 
 # Returns the distance between 2 coordinates
@@ -23,7 +23,7 @@ def objective_function(solution) -> float:
     for index, location in enumerate(solution.items()):
         # extract key
         key, _ = location
-        if key == END_OF_SOLUTION: # if we have reached the end of the solution, return the distance
+        if key == SOLUTION_SIZE: # if we have reached the end of the solution, return the distance
             return total_distance
         else:
             # calculate distance between next 2 locations and add to total
@@ -36,8 +36,17 @@ def temperature(t) -> int:
 
 # Returns a random neighbour solution of a given solution
 def neighbour(solution):
-    return -1
 
+    neighbour_solution = solution.copy()
+    # swap 2 random locations
+    rand1 = random.randint(1,SOLUTION_SIZE)
+    rand2 = random.randint(1,SOLUTION_SIZE)
+    
+    temp = neighbour_solution[rand1]
+    neighbour_solution[rand1] = neighbour_solution[rand2]
+    neighbour_solution[rand2] = temp
+    print(f"Swapped locations {rand1} and {rand2}")
+    return neighbour_solution
 # returns the probability that we should move to new solution
 def P(fitness_old, fitness_new, T) -> float:
     if fitness_new < fitness_old:
