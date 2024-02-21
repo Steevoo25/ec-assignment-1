@@ -6,6 +6,8 @@ import math
 MAX_ITERATIONS = 100
 DATA_FILE = "us_capitals.pkl"
 SOLUTION_SIZE = 48
+INITIAL_TEMP = 10000
+COOLING_FACTOR = 0.95 + INITIAL_TEMP
 #--- Definitions
 
 # Returns the distance between 2 coordinates
@@ -30,9 +32,9 @@ def objective_function(solution) -> float:
             total_distance += calculate_distance(solution[index+1], solution[index + 2]) # +1 because keys start at 1
     return -1
 
-# describes how to decrease temperature from an initial temperature t_0
+# Describes how to decrease temperature from an initial temperature t_0
 def temperature(t) -> int:
-    return -1
+    return t * COOLING_FACTOR
 
 # Returns a random neighbour solution of a given solution
 def neighbour(solution):
@@ -62,24 +64,21 @@ fitness = objective_function(solution)
 
 best_solution = solution
 best_fitness = fitness
-
 k = 0
-temp = 100
-#--- Main Loop
-# while (k<MAX_ITERATIONS):
-#     T = temperature(temp) # Calculate temperature
-#     proposed_solution = neighbour(solution) # Pick some neighbour
-#     proposed_fitness = objective_function(solution) # Compute its objective function value
-    
-#     if P(fitness, proposed_fitness, T) > random.uniform(0,1): # Stochastically move to it
-#         solution = proposed_solution # Change state if yes
-#         fitness = proposed_fitness
-        
-#     if proposed_fitness < best_fitness: # Is this a new best
-#         best_solution = proposed_solution # Update best found
-#         best_fitness = proposed_fitness
-    
-#     k +=1
-    
-# print(best_solution)
 
+#--- Main Loop
+while (k<MAX_ITERATIONS):
+    T = temperature(INITIAL_TEMP) # Calculate temperature
+    proposed_solution = neighbour(solution) # Pick some neighbour
+    proposed_fitness = objective_function(solution) # Compute its objective function value
+    
+    if P(fitness, proposed_fitness, T) > random.uniform(0,1): # Stochastically move to it
+        solution = proposed_solution # Change state if yes
+        fitness = proposed_fitness
+        
+    if proposed_fitness < best_fitness: # Is this a new best
+        best_solution = proposed_solution # Update best found
+        best_fitness = proposed_fitness
+    k +=1
+    
+print(best_solution)
