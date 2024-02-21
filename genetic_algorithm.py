@@ -35,8 +35,24 @@ def calculate_fitness(population):
         fitnesses.append(objective_function(solution))
     return fitnesses
     
+# Generates an initial solution population given a sample solution
 def generate_population(solution):
     return -1
+
+# Selects a subset of parents given their fitness values
+def select_parents(population, fitnesses):
+    return -1
+
+# Generates new individuals by applying varation operators to parents
+def generate_variations(parents):
+    return -1
+
+# 
+def reproduce():
+    return -1
+    
+def check_termination():
+    return False
 
 #--- Initialisations
 with open(DATA_FILE, "rb") as file:
@@ -50,11 +66,15 @@ fitnesses = calculate_fitness(population)
 while not termination_flag:
     #--- Selection
     # Select parents from population basen on their fitness
+    parents = select_parents(population, fitnesses)
     #--- Variation
     # Breed new individuals by applying operators
+    new_individuals = generate_variations(parents)
     #--- Fitness Calculation
     # Evaluate fitness of new individuals
+    new_fitnesses = calculate_fitness(new_individuals)
     #--- Reproduction
     # Generate new populations by replacing least fit individuals
+    new_population = reproduce(population, fitnesses, new_individuals, fitnesses_new)
     t +=1
-    
+    termination_flag = check_termination()
