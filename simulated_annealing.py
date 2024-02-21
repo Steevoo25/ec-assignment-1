@@ -40,7 +40,10 @@ def neighbour(solution):
 
 # returns the probability that we should move to new solution
 def P(fitness_old, fitness_new, T) -> float:
-    return 0.5
+    if fitness_new < fitness_old:
+        return 1
+    else:
+        return math.e**((fitness_old - fitness_new)/T)
 
 #--- Initialisations
 
@@ -63,7 +66,7 @@ temp = 100
 #         solution = proposed_solution # Change state if yes
 #         fitness = proposed_fitness
         
-#     if proposed_fitness > best_fitness: # Is this a new best
+#     if proposed_fitness < best_fitness: # Is this a new best
 #         best_solution = proposed_solution # Update best found
 #         best_fitness = proposed_fitness
     
