@@ -75,6 +75,6 @@ while not termination_flag:
     new_fitnesses = calculate_fitness(new_individuals)
     #--- Reproduction
     # Generate new populations by replacing least fit individuals
-    new_population = reproduce(population, fitnesses, new_individuals, fitnesses_new)
+    new_population = reproduce(population, fitnesses, new_individuals, new_fitnesses)
     t +=1
     termination_flag = check_termination()
