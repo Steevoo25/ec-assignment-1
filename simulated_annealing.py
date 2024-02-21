@@ -6,8 +6,8 @@ import math
 MAX_ITERATIONS = 100
 DATA_FILE = "us_capitals.pkl"
 SOLUTION_SIZE = 48
-INITIAL_TEMP = 10000
-COOLING_FACTOR = 0.95 + INITIAL_TEMP
+INITIAL_TEMP = 100
+COOLING_FACTOR = 0.95 * INITIAL_TEMP
 #--- Definitions
 
 # Returns the distance between 2 coordinates
@@ -47,21 +47,25 @@ def neighbour(solution):
     temp = neighbour_solution[rand1]
     neighbour_solution[rand1] = neighbour_solution[rand2]
     neighbour_solution[rand2] = temp
-    print(f"Swapped locations {rand1} and {rand2}")
+    #print(f"Swapped locations {rand1} and {rand2}")
     return neighbour_solution
+    
 # returns the probability that we should move to new solution
 def P(fitness_old, fitness_new, T) -> float:
     if fitness_new < fitness_old:
+        #print("new is better taking it")
         return 1
     else:
-        return math.e**((fitness_old - fitness_new)/T)
+        p = math.e**((fitness_old - fitness_new)/T)
+        #print(f"p is {p}")
+        return p
 
 #--- Initialisations
 
 with open(DATA_FILE, "rb") as file:
     solution = load(file)
 fitness = objective_function(solution)
-
+print(f"Initial solution: {solution} \nInitial Fitness: {fitness}")
 best_solution = solution
 best_fitness = fitness
 k = 0
@@ -81,4 +85,4 @@ while (k<MAX_ITERATIONS):
         best_fitness = proposed_fitness
     k +=1
     
-print(best_solution)
+print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
