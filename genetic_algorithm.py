@@ -9,11 +9,12 @@ POPULATION_SIZE = 50
 VARIATION_TYPE = ""
 MUTATION_RATE = 1/POPULATION_SIZE
 CROSSOVER_N = 3
+TRUNCATION_N = POPULATION_SIZE/2
 
 #--- Definitions
 
 # Returns an array of fitnesses aligned to population of solutions
-def calculate_fitness(population):
+def calculate_fitnesses(population):
     fitnesses = []
     #fitnesses[0] = {'0': (0,0)}
     
@@ -35,7 +36,14 @@ def generate_population(solution):
     return population
 
 # Selects a subset of parents given their fitness values
-def select_parents(population, fitnesses):
+def truncation_selection(population, fitnesses):
+    # zip solutions and fitnesses together
+    pop_and_fitness = list(zip(population, fitnesses))
+    # rand by fitness
+    ranked_solutions = sorted(pop_and_fitness, key= lambda x : x[1])
+    return ranked_solutions[:TRUNCATION_N]
+
+def tournament_selection(population, fitnesses):
     return -1
 
 # Applies the crossover variation operator
@@ -82,12 +90,15 @@ with open(DATA_FILE, "rb") as file:
     solution = pickle.load(file)
     
 population = generate_population(solution)
-fitnesses = calculate_fitness(population)
+fitnesses = calculate_fitnesses(population)
 
-for index, solution in enumerate(population):
-    print(solution)
-    print(fitnesses[index])
-    print("-----------------------------------")
+parents = truncation_selection(population, fitnesses)
+print(parents)
+
+# for index, solution in enumerate(population):
+#     print(solution)
+#     print(fitnesses[index])
+#     print("-----------------------------------")
     
 termination_flag = False
 t = 0
