@@ -6,9 +6,15 @@ from simulated_annealing import objective_function, neighbour
 SOLUTION_SIZE = 48
 DATA_FILE = "us_capitals.pkl"
 POPULATION_SIZE = 50
-VARIATION_TYPE = ""
+
+# Variation
 MUTATION_RATE = 1/POPULATION_SIZE
 CROSSOVER_N = 3
+
+
+# Selection
+TOURNAMENT_SIZE = 2
+OFFSPRING_SIZE = 6
 TRUNCATION_N = POPULATION_SIZE/2
 
 #--- Definitions
@@ -44,7 +50,23 @@ def truncation_selection(population, fitnesses):
     return ranked_solutions[:TRUNCATION_N]
 
 def tournament_selection(population, fitnesses):
-    return -1
+    parents = []
+    # zip solutions and fitnesses together
+    pop_and_fitness = list(zip(population, fitnesses))
+    
+    # generate n random points to perform crossover
+    for _ in range(OFFSPRING_SIZE):
+        tournament = []
+        # randomly sample k solutions
+        tournament = [pop_and_fitness[random.randint(0, SOLUTION_SIZE - 1)] for _ in range(TOURNAMENT_SIZE)]
+        # sort the list
+        tournament.sort(key = lambda x: x[1])
+        parents.append(tournament[0][0])
+        # select top solution
+    # repeat until enough offspring are created
+    return parents
+
+
 
 # Applies the crossover variation operator
 def crossover(parent1, parent2, n):
@@ -55,7 +77,7 @@ def crossover(parent1, parent2, n):
         point_list.append(random.randint(0,SOLUTION_SIZE))
     # sort the list
     point_list.sort()
-    print(point_list)
+
     # for each point, swap the rest of the arrays
     for point in point_list:
         temp = parent1[point:]
@@ -92,7 +114,7 @@ with open(DATA_FILE, "rb") as file:
 population = generate_population(solution)
 fitnesses = calculate_fitnesses(population)
 
-parents = truncation_selection(population, fitnesses)
+parents = tournament_selection(population, fitnesses)
 print(parents)
 
 # for index, solution in enumerate(population):
@@ -104,18 +126,18 @@ termination_flag = False
 t = 0
 
 
-# while not termination_flag:
-#     #--- Selection
-#     # Select parents from population basen on their fitness
-#     parents = select_parents(population, fitnesses)
-#     #--- Variation
-#     # Breed new individuals by applying operators
-#     new_individuals = generate_variations(parents)
-#     #--- Fitness Calculation
-#     # Evaluate fitness of new individuals
-#     new_fitnesses = calculate_fitness(new_individuals)
-#     #--- Reproduction
-#     # Generate new populations by replacing least fit individuals
-#     new_population = reproduce(population, fitnesses, new_individuals, new_fitnesses)
-#     t +=1
-#     termination_flag = check_termination()
+while not termination_flag:
+    #--- Selection
+    # Select parents from population basen on their fitness
+    parents = tournament_selection(population, fitnesses)
+    #--- Variation
+    # Breed new individuals by applying operators
+    new_individuals = generate_variations(parents)
+    #--- Fitness Calculation
+    # Evaluate fitness of new individuals
+    new_fitnesses = calculate_fitnesses(new_individuals)
+    #--- Reproduction
+    # Generate new populations by replacing least fit individuals
+    new_population = reproduce(population, fitnesses, new_individuals, new_fitnesses)
+    t +=1
+    termination_flag = check_termination()
