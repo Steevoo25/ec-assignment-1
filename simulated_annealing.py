@@ -3,11 +3,9 @@ from pickle import load
 import math
 #--- Constants
 
-MAX_ITERATIONS = 100
-DATA_FILE = "us_capitals.pkl"
 SOLUTION_SIZE = 47
-INITIAL_TEMP = 100
-COOLING_FACTOR = 0.95 * INITIAL_TEMP
+DATA_FILE = "us_capitals.pkl"
+
 #--- Definitions
 
 # Returns the distance between 2 coordinates
@@ -33,7 +31,7 @@ def objective_function(solution) -> float:
     return -1
 
 # Describes how to decrease temperature from an initial temperature t_0
-def temperature(t) -> int:
+def temperature(t, COOLING_FACTOR) -> int:
     return t * COOLING_FACTOR
 
 # Returns a random neighbour solution of a given solution
@@ -60,30 +58,37 @@ def P(fitness_old, fitness_new, T) -> float:
         #print(f"p is {p}")
         return p
 
-#--- Initialisations
-
-with open(DATA_FILE, "rb") as file:
-    solution = load(file)
-fitness = objective_function(solution)
-
-#print(f"Initial solution: {solution} \nInitial Fitness: {fitness}")
-best_solution = solution
-best_fitness = fitness
-k = 0
-
-#--- Main Loop
-while (k<MAX_ITERATIONS):
-    T = temperature(INITIAL_TEMP) # Calculate temperature
-    proposed_solution = neighbour(solution) # Pick some neighbour
-    proposed_fitness = objective_function(solution) # Compute its objective function value
-    
-    if P(fitness, proposed_fitness, T) > random.uniform(0,1): # Stochastically move to it
-        solution = proposed_solution # Change state if yes
-        fitness = proposed_fitness
-        
-    if proposed_fitness < best_fitness: # Is this a new best
-        best_solution = proposed_solution # Update best found
-        best_fitness = proposed_fitness
-    k +=1
     
 #print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
+def sa(iterations, initial_temp, cooling_factor, cooling_rate):
+
+    SA_ITERATIONS = 100
+    INITIAL_TEMP = 100
+    COOLING_RATE = 0.95
+    COOLING_FACTOR = COOLING_RATE * INITIAL_TEMP
+    
+    #--- Initialisations
+    with open(DATA_FILE, "rb") as file:
+        solution = load(file)
+    fitness = objective_function(solution)
+
+    best_solution = solution
+    best_fitness = fitness
+
+    k = 0
+    #--- Main Loop
+    while (k<SA_ITERATIONS):
+        T = temperature(INITIAL_TEMP, COOLING_FACTOR) # Calculate temperature
+        
+        proposed_solution = neighbour(solution) # Pick some neighbour
+        proposed_fitness = objective_function(solution) # Compute its objective function value
+        
+        if P(fitness, proposed_fitness, T) > random.uniform(0,1): # Stochastically move to it
+            solution = proposed_solution # Change state if yes
+            fitness = proposed_fitness
+            
+        if proposed_fitness < best_fitness: # Is this a new best
+            best_solution = proposed_solution # Update best found
+            best_fitness = proposed_fitness
+        k +=1
+    return best_solution, best_fitness
