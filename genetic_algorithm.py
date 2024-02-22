@@ -23,18 +23,9 @@ def calculate_fitness(population):
     
 # Generates a random candidate solution
 def generate_random_solution(solution):
-
-    shuffled_solution = {}
-    
-    # turn keys into a list
-    keys = list(solution.keys())
-    # shuffle keys
-    random.shuffle(keys)
-
-    for index, key in enumerate(keys, 1): # for each key, extract its value and append it to the dict
-        shuffled_solution[index] = solution[key]
-        
-    return shuffled_solution
+    random_solution = solution.copy()
+    random.shuffle(random_solution)
+    return random_solution
 
 # Generates an initial solution population given a sample solution
 def generate_population(solution):
@@ -49,8 +40,6 @@ def select_parents(population, fitnesses):
 
 # Applies the crossover variation operator
 def crossover(parent1, parent2, n):
-    parent1 = list(parent1.values())
-    parent2 = list(parent2.values())
     point_list = []
     temp = []
     # generate n random points to perform crossover
@@ -61,11 +50,10 @@ def crossover(parent1, parent2, n):
     print(point_list)
     # for each point, swap the rest of the arrays
     for point in point_list:
-        point = int(point)
         temp = parent1[point:]
         parent1[point:] = parent2[point:]
         parent2[point:] = temp
-    
+        
     return parent1, parent2
 # Applies the mutation variation operator
 # swaps each location with a random location with probability P_m
@@ -78,7 +66,7 @@ def mutation(parents):
 # Generates new individuals by applying varation operators to parents
 def generate_variations(parents):
     new_individuals = mutation(parents)
-    new_individuals = crossover(new_individuals, CROSSOVER_N)
+    #new_individuals = crossover(new_individuals, CROSSOVER_N)
     return new_individuals
 
 # 
@@ -92,22 +80,18 @@ def check_termination():
 #--- Initialisations
 with open(DATA_FILE, "rb") as file:
     solution = pickle.load(file)
-
+    
 population = generate_population(solution)
+fitnesses = calculate_fitness(population)
 
-neighbour_solution = neighbour(solution)
-print(solution)
-print(neighbour_solution)
-crossover_test1, crossover_test2 = crossover(solution, neighbour_solution, 3)
-print(crossover_test1)
-print(crossover_test2)
-# for solution in population:
-#     print(solution)
-#     print("-----------------------------------")
+for index, solution in enumerate(population):
+    print(solution)
+    print(fitnesses[index])
+    print("-----------------------------------")
     
 termination_flag = False
 t = 0
-fitnesses = calculate_fitness(population)
+
 
 # while not termination_flag:
 #     #--- Selection
