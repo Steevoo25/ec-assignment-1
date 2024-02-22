@@ -5,19 +5,6 @@ from simulated_annealing import objective_function, neighbour
 #--- Constants
 SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
-GA_ITERATIONS = 1000
-
-POPULATION_SIZE = 50
-
-# Variation
-MUTATION_RATE = 1/POPULATION_SIZE
-CROSSOVER_N = 3
-
-
-# Selection
-TOURNAMENT_SIZE = 2
-OFFSPRING_SIZE = 6
-TRUNCATION_N = POPULATION_SIZE/2
 
 #--- Definitions
 
@@ -37,21 +24,21 @@ def generate_random_solution(solution):
     return random_solution
 
 # Generates an initial solution population given a sample solution
-def generate_population(solution):
+def generate_population(solution, POPULATION_SIZE):
     population = []
     for _ in range(POPULATION_SIZE):
         population.append(generate_random_solution(solution))
     return population
 
 # Selects a subset of parents given their fitness values
-def truncation_selection(population, fitnesses):
+def truncation_selection(population, fitnesses, TRUNCATION_N):
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
     # rand by fitness
     ranked_solutions = sorted(pop_and_fitness, key= lambda x : x[1])
     return ranked_solutions[:TRUNCATION_N]
 
-def tournament_selection(population, fitnesses):
+def tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE):
     parents = []
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
@@ -89,60 +76,71 @@ def crossover(parent1, parent2, n):
     return parent1, parent2
 # Applies the mutation variation operator
 # swaps each location with a random location with probability P_m
-def mutation(parents):
+def mutation(parents, MUTATION_RATE):
     for solution in parents:
         if random.uniform(0,1) < MUTATION_RATE:
             solution = neighbour(solution)
     return parents
     
 # Generates new individuals by applying varation operators to parents
-def generate_variations(parents):
-    new_individuals = mutation(parents)
+def generate_variations(parents, MUTATION_RATE):
+    new_individuals = mutation(parents, MUTATION_RATE)
     #new_individuals = crossover(new_individuals, CROSSOVER_N)
     return new_individuals
 
 # 
-def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses):
+def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, OFFSPRING_SIZE):
     # Take alll new individuals and replace with worse individuals in population
     population[-OFFSPRING_SIZE:] = new_individuals
     fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
     return population, fitnesses
 
-#--- Initialisations
-with open(DATA_FILE, "rb") as file:
-    solution = pickle.load(file)
+
+
+def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size):
+
+    GA_ITERATIONS = iterations
+
+    POPULATION_SIZE = population_size
     
-population = generate_population(solution)
-fitnesses = calculate_fitnesses(population)
+    # Variation
+    MUTATION_RATE = mutation_rate
+    #CROSSOVER_N = 3
 
-parents = tournament_selection(population, fitnesses)
+    # Selection
+    TOURNAMENT_SIZE = tournament_size
+    OFFSPRING_SIZE = offspring_size
+    #TRUNCATION_N = POPULATION_SIZE/2
 
-# for index, solution in enumerate(population):
-#     print(solution)
-#     print(fitnesses[index])
-#     print("-----------------------------------")
+
+    #--- Initialisations
+    with open(DATA_FILE, "rb") as file:
+        solution = pickle.load(file)
+        
+    population = generate_population(solution, POPULATION_SIZE)
+    fitnesses = calculate_fitnesses(population)
+
+    termination_flag = False
+    t = 0
     
-termination_flag = False
-t = 0
+    #--- Main Loop
+    while not termination_flag:
+        #--- Selection
+        # Select parents from population basen on their fitness
+        parents = tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE)
+        #--- Variation
+        # Breed new individuals by applying operators
+        new_individuals = generate_variations(parents, MUTATION_RATE)
+        #--- Fitness Calculation
+        # Evaluate fitness of new individuals
+        new_fitnesses = calculate_fitnesses(new_individuals)
+        #--- Reproduction
+        # Generate new populations by replacing least fit individuals
+        population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, OFFSPRING_SIZE)
+        t +=1
+        if t == GA_ITERATIONS : termination_flag = True
+        
+    #print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
 
-
-while not termination_flag:
-    #--- Selection
-    # Select parents from population basen on their fitness
-    parents = tournament_selection(population, fitnesses)
-    #--- Variation
-    # Breed new individuals by applying operators
-    new_individuals = generate_variations(parents)
-    #--- Fitness Calculation
-    # Evaluate fitness of new individuals
-    new_fitnesses = calculate_fitnesses(new_individuals)
-    #--- Reproduction
-    # Generate new populations by replacing least fit individuals
-    population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses)
-    t +=1
-    if t == NUMBER_OF_ITERATIONS : termination_flag = True
-    
-print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
-
-def ga():
-    return -1
+    # return solution with lowest fitness value
+    return sorted(list(zip(population, fitnesses)), key= lambda x : x[1])[0]
