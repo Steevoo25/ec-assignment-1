@@ -5,7 +5,7 @@ import math
 
 MAX_ITERATIONS = 100
 DATA_FILE = "us_capitals.pkl"
-SOLUTION_SIZE = 48
+SOLUTION_SIZE = 47
 INITIAL_TEMP = 100
 COOLING_FACTOR = 0.95 * INITIAL_TEMP
 #--- Definitions
@@ -21,15 +21,15 @@ def calculate_distance(start_coord, end_coord) -> float:
 def objective_function(solution) -> float:
     # Calculate total distance travelled for a solution
     total_distance = 0
-    # enumerate solution, allows me to access the next solution once keys are not in order
-    for index, location in enumerate(solution.items()):
-        # extract key
-        key, _ = location
-        if key == SOLUTION_SIZE: # if we have reached the end of the solution, return the distance
+    
+    # enumerate solution, allows me to access the next solution
+    for index, location in enumerate(solution):
+        
+        if index == SOLUTION_SIZE-1: # if we have reached the end of the solution, return the distance
             return total_distance
         else:
             # calculate distance between next 2 locations and add to total
-            total_distance += calculate_distance(solution[index+1], solution[index + 2]) # +1 because keys start at 1
+            total_distance += calculate_distance(location, solution[index + 1]) # +1 because keys start at 1
     return -1
 
 # Describes how to decrease temperature from an initial temperature t_0
@@ -65,6 +65,7 @@ def P(fitness_old, fitness_new, T) -> float:
 with open(DATA_FILE, "rb") as file:
     solution = load(file)
 fitness = objective_function(solution)
+
 #print(f"Initial solution: {solution} \nInitial Fitness: {fitness}")
 best_solution = solution
 best_fitness = fitness
