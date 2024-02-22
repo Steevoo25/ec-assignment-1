@@ -62,9 +62,9 @@ def P(fitness_old, fitness_new, T) -> float:
 #print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
 def sa(iterations, initial_temp, cooling_rate):
 
-    SA_ITERATIONS = 100
-    INITIAL_TEMP = 100
-    COOLING_RATE = 0.95
+    SA_ITERATIONS = iterations
+    INITIAL_TEMP = initial_temp
+    COOLING_RATE = cooling_rate
     COOLING_FACTOR = COOLING_RATE * INITIAL_TEMP
     
     #--- Initialisations
