@@ -6,6 +6,7 @@ from simulated_annealing import objective_function, neighbour
 SOLUTION_SIZE = 48
 DATA_FILE = "us_capitals.pkl"
 POPULATION_SIZE = 50
+NUMBER_OF_ITERATIONS = 1000
 
 # Variation
 MUTATION_RATE = 1/POPULATION_SIZE
@@ -100,15 +101,11 @@ def generate_variations(parents):
     return new_individuals
 
 # 
-def reproduce(population, fitnesses, new_individuals, new_fitnesses):
+def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses):
     # Take alll new individuals and replace with worse individuals in population
     population[-OFFSPRING_SIZE:] = new_individuals
     fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
     return population, fitnesses
-
-
-def check_termination():
-    return False
 
 #--- Initialisations
 with open(DATA_FILE, "rb") as file:
@@ -140,8 +137,8 @@ while not termination_flag:
     new_fitnesses = calculate_fitnesses(new_individuals)
     #--- Reproduction
     # Generate new populations by replacing least fit individuals
-    population, fitnesses = reproduce(population, fitnesses, new_individuals, new_fitnesses)
+    population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses)
     t +=1
-    termination_flag = check_termination()
-    if t == 10 : termination_flag = True
+    if t == NUMBER_OF_ITERATIONS : termination_flag = True
+    
 print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
