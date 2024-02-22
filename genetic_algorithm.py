@@ -100,8 +100,11 @@ def generate_variations(parents):
     return new_individuals
 
 # 
-def reproduce():
-    return -1
+def reproduce(population, fitnesses, new_individuals, new_fitnesses):
+    # Take alll new individuals and replace with worse individuals in population
+    population[-OFFSPRING_SIZE:] = new_individuals
+    fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
+    return population, fitnesses
 
 
 def check_termination():
@@ -115,7 +118,6 @@ population = generate_population(solution)
 fitnesses = calculate_fitnesses(population)
 
 parents = tournament_selection(population, fitnesses)
-print(parents)
 
 # for index, solution in enumerate(population):
 #     print(solution)
@@ -138,6 +140,8 @@ while not termination_flag:
     new_fitnesses = calculate_fitnesses(new_individuals)
     #--- Reproduction
     # Generate new populations by replacing least fit individuals
-    new_population = reproduce(population, fitnesses, new_individuals, new_fitnesses)
+    population, fitnesses = reproduce(population, fitnesses, new_individuals, new_fitnesses)
     t +=1
     termination_flag = check_termination()
+    if t == 10 : termination_flag = True
+print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
