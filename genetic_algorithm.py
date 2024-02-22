@@ -3,10 +3,11 @@ import random
 import pickle
 from simulated_annealing import objective_function, neighbour
 #--- Constants
-SOLUTION_SIZE = 48
+SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
+GA_ITERATIONS = 1000
+
 POPULATION_SIZE = 50
-NUMBER_OF_ITERATIONS = 1000
 
 # Variation
 MUTATION_RATE = 1/POPULATION_SIZE
@@ -142,3 +143,6 @@ while not termination_flag:
     if t == NUMBER_OF_ITERATIONS : termination_flag = True
     
 print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
+
+def ga():
+    return -1
