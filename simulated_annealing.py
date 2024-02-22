@@ -65,7 +65,7 @@ def P(fitness_old, fitness_new, T) -> float:
 with open(DATA_FILE, "rb") as file:
     solution = load(file)
 fitness = objective_function(solution)
-print(f"Initial solution: {solution} \nInitial Fitness: {fitness}")
+#print(f"Initial solution: {solution} \nInitial Fitness: {fitness}")
 best_solution = solution
 best_fitness = fitness
 k = 0
@@ -85,4 +85,4 @@ while (k<MAX_ITERATIONS):
         best_fitness = proposed_fitness
     k +=1
     
-print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
+#print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
