@@ -9,15 +9,20 @@ DATA_FILE = "us_capitals.pkl"
 #--- Definitions
 
 # Checks if a proposed solution is a permutation of the sample soltion, ie. it contains all cities and visits each city once
-def check_permutation(sample_solution : list, proposed_solution: list) -> bool:
+def is_permutation(sample_solution : list, proposed_solution: list) -> bool:
     sample_solution.sort()
     proposed_solution.sort()
     return sample_solution == proposed_solution
     
 # Filters a population removing any that violate constraints
 def check_constraints(sample_solution, population):
+    filtered_population = []
     #check every solution is a permutation of initial solution
-    return population
+    for proposed_solution in population:
+        if is_permutation(sample_solution, proposed_solution):
+            filtered_population.append(proposed_solution)
+    
+    return filtered_population
     
 # Returns an array of fitnesses aligned to population of solutions
 def calculate_fitnesses(population):
@@ -152,6 +157,10 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         if t == GA_ITERATIONS : termination_flag = True
         
     #print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
-
+    # Filter out solutions that violate constraints
+    
+    population = check_constraints(sample_solution, population)
+    fitnesses = calculate_fitnesses(population)
+    
     # return solution with lowest fitness value
     return sorted(list(zip(population, fitnesses)), key= lambda x : x[1])[0]
