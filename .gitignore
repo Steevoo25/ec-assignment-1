@@ -2,3 +2,4 @@
 *.pkl
 *.cpython
 __pycache__/*
+*.pyc
