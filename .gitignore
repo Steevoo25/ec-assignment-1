@@ -3,3 +3,5 @@
 *.cpython
 __pycache__/*
 *.pyc
+*.cpython
+*.cpython.pyc
