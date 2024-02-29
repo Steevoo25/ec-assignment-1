@@ -1,7 +1,9 @@
 *.pdf
 *.pkl
 *.cpython
-__pycache__/*
+__pycache__/
 *.pyc
 *.cpython
 *.cpython.pyc
+*.cpython-38
+*.cpython-38.pyc
