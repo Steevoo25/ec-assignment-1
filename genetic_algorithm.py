@@ -147,27 +147,13 @@ def generational_reproduction(population, fitnesses, new_individuals, new_fitnes
     fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
     return population, fitnesses
 
-def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n):
-
-    GA_ITERATIONS = iterations
-
-    POPULATION_SIZE = population_size
-    
-    # Variation
-    MUTATION_RATE = mutation_rate
-    #CROSSOVER_N = 3
-
-    # Selection
-    TOURNAMENT_SIZE = tournament_size
-    OFFSPRING_SIZE = offspring_size
-    #TRUNCATION_N = POPULATION_SIZE/2
-
+def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n) -> tuple:
 
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         sample_solution = pickle.load(file)
     
-    population = generate_population(sample_solution, POPULATION_SIZE)
+    population = generate_population(sample_solution, population_size)
     fitnesses = calculate_fitnesses(population)
 
     termination_flag = False
@@ -177,18 +163,18 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
     while not termination_flag:
         #--- Selection
         # Select parents from population basen on their fitness
-        parents = tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE)
+        parents = tournament_selection(population, fitnesses, offspring_size, tournament_size)
         #--- Variation
         # Breed new individuals by applying operators
-        new_individuals = generate_variations(parents, MUTATION_RATE, crossover_n)
+        new_individuals = generate_variations(parents, mutation_rate, crossover_n)
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
         new_fitnesses = calculate_fitnesses(new_individuals)
         #--- Reproduction
         # Generate new populations by replacing least fit individuals
-        population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, OFFSPRING_SIZE)
+        population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size)
         t +=1
-        if t == GA_ITERATIONS : termination_flag = True
+        if t == iterations : termination_flag = True
         
     #print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
     # Filter out solutions that violate constraints
@@ -196,5 +182,7 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
     #population = check_constraints(sample_solution, population)
     #fitnesses = calculate_fitnesses(population)
     
+    sorted_list = sorted(list(zip(population, fitnesses)), key= lambda x : x[1])
     # return solution with lowest fitness value
-    return sorted(list(zip(population, fitnesses)), key= lambda x : x[1])[0]
+    print(sorted_list[0])
+    return next(((solution, fitness) for solution, fitness in sorted_list if is_permutation(sample_solution, solution)), None)

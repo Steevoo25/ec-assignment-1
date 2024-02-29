@@ -3,12 +3,12 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 
-iterations = 1000
+iterations = 100
 population_list = list(range(50, 550, 5))
 tournament_size = 2
 offspring_size = 20
 crossover_n = 5
-trial_runs = 100
+trial_runs = 1
 
 columns = ["solution","fitness","iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "crossover_n" ]
 df = pd.DataFrame(columns=columns)
