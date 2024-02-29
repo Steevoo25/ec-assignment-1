@@ -127,17 +127,16 @@ def mutation(parents, MUTATION_RATE):
     return parents
     
 # Generates new individuals by applying varation operators to parents
-def generate_variations(parents, MUTATION_RATE, crossover_n):
+def generate_variations(parents, mutation_rate, crossover_n):
     # Mutation
     
-    new_individuals = mutation(parents, MUTATION_RATE)
+    new_individuals = mutation(parents, mutation_rate)
     
     # Crossover
     for i, _ in enumerate(new_individuals[:-1]):
         new_individuals[i] = ordered_crossover(new_individuals)
 
     #new_individuals = n_point_crossover(parents, crossover_n)
-    #print(new_individuals)
     return new_individuals
 
 # 
