@@ -8,8 +8,14 @@ DATA_FILE = "us_capitals.pkl"
 
 #--- Definitions
 
+# Checks if a proposed solution is a permutation of the sample soltion, ie. it contains all cities and visits each city once
+def check_permutation(sample_solution : list, proposed_solution: list) -> bool:
+    sample_solution.sort()
+    proposed_solution.sort()
+    return sample_solution == proposed_solution
+    
 # Filters a population removing any that violate constraints
-def check_constraints(population):
+def check_constraints(sample_solution, population):
     #check every solution is a permutation of initial solution
     return population
     
@@ -120,9 +126,9 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
 
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
-        solution = pickle.load(file)
+        sample_solution = pickle.load(file)
         
-    population = generate_population(solution, POPULATION_SIZE)
+    population = generate_population(sample_solution, POPULATION_SIZE)
     fitnesses = calculate_fitnesses(population)
 
     termination_flag = False
