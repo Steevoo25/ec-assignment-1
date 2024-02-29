@@ -2,6 +2,7 @@ import math
 import random
 import pickle
 from simulated_annealing import objective_function, neighbour
+
 #--- Constants
 SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
@@ -40,30 +41,31 @@ def generate_random_solution(solution):
     return random_solution
 
 # Generates an initial solution population given a sample solution
-def generate_population(solution, POPULATION_SIZE):
+def generate_population(solution, population_size):
     population = []
-    for _ in range(POPULATION_SIZE):
+    for _ in range(population_size):
         population.append(generate_random_solution(solution))
     return population
 
 # Selects a subset of parents given their fitness values
-def truncation_selection(population, fitnesses, TRUNCATION_N):
+def truncation_selection(population, fitnesses, truncation_n):
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
     # rand by fitness
     ranked_solutions = sorted(pop_and_fitness, key= lambda x : x[1])
-    return ranked_solutions[:TRUNCATION_N]
+    return ranked_solutions[:truncation_n]
 
-def tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE):
+# 
+def tournament_selection(population, fitnesses, offspring_size, tournament_size):
     parents = []
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
     
     # generate n random points to perform selection
-    for _ in range(OFFSPRING_SIZE):
+    for _ in range(offspring_size):
         tournament = []
         # randomly sample k solutions
-        tournament = [pop_and_fitness[random.randint(0, SOLUTION_SIZE - 1)] for _ in range(TOURNAMENT_SIZE)]
+        tournament = [pop_and_fitness[random.randint(0, SOLUTION_SIZE - 1)] for _ in range(tournament_size)]
         # sort the list
         tournament.sort(key = lambda x: x[1])
         parents.append(tournament[0][0])
@@ -98,16 +100,20 @@ def n_point_crossover(parents, n):
 
 # gives an offspring given a pair of parents
 def ordered_crossover(parents):
+
     # pick 2 random parents
-    
     parent1_index = random.randint(0, len(parents) - 1)
     parent2_index = random.randint(0, len(parents) - 1)
+    
     while parent1_index == parent2_index:
         parent2_index = random.randint(0, len(parents) - 1)
+        
     parent1, parent2 = parents[parent1_index], parents[parent2_index]
+    
     # obtain 2 random crossover points
     point1 = random.randint(0, len(parent1) - 1)
     point2 = random.randint(0, len(parent1) - 1)
+    
     # assure point1 < point2
     if point1 > point2:
         point1, point2 = point2, point1
@@ -117,12 +123,11 @@ def ordered_crossover(parents):
     offspring[point1:point2] = parent2[point1:point2]
     return offspring
     
-    
 # Applies the mutation variation operator
 # swaps each location with a random location with probability P_m
-def mutation(parents, MUTATION_RATE):
+def mutation(parents, mutation_rate):
     for solution in parents:
-        if random.uniform(0,1) < MUTATION_RATE:
+        if random.uniform(0,1) < mutation_rate:
             solution = neighbour(solution)
     return parents
     
@@ -140,10 +145,10 @@ def generate_variations(parents, mutation_rate, crossover_n):
     return new_individuals
 
 # 
-def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, OFFSPRING_SIZE):
+def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size):
     # Take alll new individuals and replace with worse individuals in population
-    population[-OFFSPRING_SIZE:] = new_individuals
-    fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
+    population[-offspring_size:] = new_individuals
+    fitnesses[-offspring_size:] = new_fitnesses
     return population, fitnesses
 
 def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n) -> tuple:
