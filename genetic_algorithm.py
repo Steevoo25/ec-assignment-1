@@ -59,7 +59,7 @@ def tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE)
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
     
-    # generate n random points to perform crossover
+    # generate n random points to perform selection
     for _ in range(OFFSPRING_SIZE):
         tournament = []
         # randomly sample k solutions
@@ -71,12 +71,17 @@ def tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE)
     # repeat until enough offspring are created
     return parents
 
-
-
 # Applies the crossover variation operator
-def crossover(parent1, parent2, n):
+def n_point_crossover(parents, n):
+    print(len(parents))
+    # pick 2 random parents
+    parent1 = parents[random.randint(0, len(parents) - 1)]
+    parents.remove(parent1)
+    parent2 = parents[random.randint(0, len(parents) - 1)]
+    
     point_list = []
     temp = []
+    
     # generate n random points to perform crossover
     for _ in range(n):
         point_list.append(random.randint(0,SOLUTION_SIZE))
@@ -90,6 +95,29 @@ def crossover(parent1, parent2, n):
         parent2[point:] = temp
         
     return parent1, parent2
+
+# gives an offspring given a pair of parents
+def ordered_crossover(parents):
+    # pick 2 random parents
+    
+    parent1_index = random.randint(0, len(parents) - 1)
+    parent2_index = random.randint(0, len(parents) - 1)
+    while parent1_index == parent2_index:
+        parent2_index = random.randint(0, len(parents) - 1)
+    parent1, parent2 = parents[parent1_index], parents[parent2_index]
+    # obtain 2 random crossover points
+    point1 = random.randint(0, len(parent1) - 1)
+    point2 = random.randint(0, len(parent1) - 1)
+    # assure point1 < point2
+    if point1 > point2:
+        point1, point2 = point2, point1
+    offspring = parent1.copy()
+    
+    # copy range between 2 parents
+    offspring[point1:point2] = parent2[point1:point2]
+    return offspring
+    
+    
 # Applies the mutation variation operator
 # swaps each location with a random location with probability P_m
 def mutation(parents, MUTATION_RATE):
@@ -99,9 +127,17 @@ def mutation(parents, MUTATION_RATE):
     return parents
     
 # Generates new individuals by applying varation operators to parents
-def generate_variations(parents, MUTATION_RATE):
+def generate_variations(parents, MUTATION_RATE, crossover_n):
+    # Mutation
+    
     new_individuals = mutation(parents, MUTATION_RATE)
-    #new_individuals = crossover(new_individuals, CROSSOVER_N)
+    
+    # Crossover
+    for i, _ in enumerate(new_individuals[:-1]):
+        new_individuals[i] = ordered_crossover(new_individuals)
+
+    #new_individuals = n_point_crossover(parents, crossover_n)
+    #print(new_individuals)
     return new_individuals
 
 # 
@@ -111,9 +147,7 @@ def generational_reproduction(population, fitnesses, new_individuals, new_fitnes
     fitnesses[-OFFSPRING_SIZE:] = new_fitnesses
     return population, fitnesses
 
-
-
-def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size):
+def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n):
 
     GA_ITERATIONS = iterations
 
@@ -132,7 +166,7 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         sample_solution = pickle.load(file)
-        
+    
     population = generate_population(sample_solution, POPULATION_SIZE)
     fitnesses = calculate_fitnesses(population)
 
@@ -146,7 +180,7 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         parents = tournament_selection(population, fitnesses, OFFSPRING_SIZE, TOURNAMENT_SIZE)
         #--- Variation
         # Breed new individuals by applying operators
-        new_individuals = generate_variations(parents, MUTATION_RATE)
+        new_individuals = generate_variations(parents, MUTATION_RATE, crossover_n)
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
         new_fitnesses = calculate_fitnesses(new_individuals)
@@ -159,8 +193,8 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
     #print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
     # Filter out solutions that violate constraints
     
-    population = check_constraints(sample_solution, population)
-    fitnesses = calculate_fitnesses(population)
+    #population = check_constraints(sample_solution, population)
+    #fitnesses = calculate_fitnesses(population)
     
     # return solution with lowest fitness value
     return sorted(list(zip(population, fitnesses)), key= lambda x : x[1])[0]
