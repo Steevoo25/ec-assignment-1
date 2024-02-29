@@ -62,11 +62,7 @@ def P(fitness_old, fitness_new, T) -> float:
 #print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
 def sa(iterations, initial_temp, cooling_rate):
 
-    SA_ITERATIONS = iterations
-    INITIAL_TEMP = initial_temp
-    COOLING_RATE = cooling_rate
-    COOLING_FACTOR = COOLING_RATE * INITIAL_TEMP
-    
+    T = initial_temp    
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         solution = load(file)
@@ -77,9 +73,10 @@ def sa(iterations, initial_temp, cooling_rate):
 
     k = 0
     #--- Main Loop
-    while (k<SA_ITERATIONS):
-        T = temperature(INITIAL_TEMP, COOLING_FACTOR) # Calculate temperature
-        
+    
+    while (k<iterations):
+        T = temperature(T, cooling_rate) # Calculate temperature
+        print(T, cooling_rate)
         proposed_solution = neighbour(solution) # Pick some neighbour
         proposed_fitness = objective_function(solution) # Compute its objective function value
         
