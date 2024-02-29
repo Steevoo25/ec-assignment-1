@@ -1,12 +1,24 @@
 from genetic_algorithm import ga
-import matplotlib as plt
+from matplotlib import pyplot as plt
+import pandas as pd
 
-iterations = 1000
+
+iterations = 100
 population_size = 50
 mutation_rate = 1 // population_size
 tournament_size = 2
-offspring_size = 6
+offspring_size = 20
 crossover_n = 5
+trial_runs = 5
 
-print(f"Result for iterations: {iterations}, population_size: {population_size}, mutation_rate: {mutation_rate}, tournament_size: {tournament_size}, offspring_size: {offspring_size}, crossover_n: {crossover_n}")
-print(ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n))
+columns = ["solution","fitness","iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "crossover_n" ]
+df = pd.DataFrame(columns=columns)
+
+for i in range(trial_runs):
+    # edit parameters
+    # run GA
+    solution, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
+    df.loc[i] = (solution, fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
+    
+df.index.name = 'Index'
+print(df)
