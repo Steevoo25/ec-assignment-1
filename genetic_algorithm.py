@@ -8,6 +8,11 @@ DATA_FILE = "us_capitals.pkl"
 
 #--- Definitions
 
+# Filters a population removing any that violate constraints
+def check_constraints(population):
+    #check every solution is a permutation of initial solution
+    return population
+    
 # Returns an array of fitnesses aligned to population of solutions
 def calculate_fitnesses(population):
     fitnesses = []
