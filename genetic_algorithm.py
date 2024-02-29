@@ -176,13 +176,7 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         t +=1
         if t == iterations : termination_flag = True
         
-    #print(f"GA terminated with best fitness: {sorted(fitnesses)[0]}")
-    # Filter out solutions that violate constraints
-    
-    #population = check_constraints(sample_solution, population)
-    #fitnesses = calculate_fitnesses(population)
-    
+    # sort population by fitness
     sorted_list = sorted(list(zip(population, fitnesses)), key= lambda x : x[1])
-    # return solution with lowest fitness value
-    print(sorted_list[0])
+    #return first solution that doesnt violate constraints
     return next(((solution, fitness) for solution, fitness in sorted_list if is_permutation(sample_solution, solution)), None)
