@@ -20,20 +20,26 @@ df = pd.DataFrame(columns=columns)
 #     cooling_rate = 0.95
 #     cooling_rate = cooling_rate_list[i] / 1000
 #     # run SA
-#     solution, fitness = sa(iterations, initial_temp, cooling_rate)
-#     df.loc[i] = (solution, fitness, iterations, initial_temp, cooling_rate)
+
     
-# df = df.sort_values(by='fitness')
-# df.index.name = 'Index'
-# print(df)
+
 
 def objective(trial):
+
     iterations = trial.suggest_int('iterations', 10, 100)
     initial_temp = trial.suggest_int('initial_temp',10, 50 )
     cooling_rate = trial.suggest_float('cooling_rate', 0.5, 1)
-    return sa(iterations, initial_temp, cooling_rate)[1]
     
+    solution, fitness = sa(iterations, initial_temp, cooling_rate)
+    df.loc[trial.number] = (solution, fitness, iterations, initial_temp, cooling_rate)
+    
+    return fitness
+
 study = optuna.create_study()
 study.optimize(objective, n_trials=100)
 
 print(study.best_params)
+
+df = df.sort_values(by='fitness')
+df.index.name = 'Index'
+print(df)
