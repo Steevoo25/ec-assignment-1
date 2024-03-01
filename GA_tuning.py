@@ -14,7 +14,7 @@ def objective(trial):
     mutation_rate = 1 / iterations
     tournament_size = trial.suggest_int('tournament_size', 2, 10)
     offspring_size = trial.suggest_int('offspring_size', 3, 20)
-    crossover_n = trial.suggest_int('crossover_', 2, 10)
+    crossover_n = trial.suggest_int('crossover_n', 2, 10)
     # Compute solution and fitness
     solution, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
     df.loc[trial.number] = (solution, fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
