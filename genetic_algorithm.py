@@ -191,7 +191,6 @@ def ga(iterations,
     mutation_rate, 
     tournament_size, 
     offspring_size, 
-    crossover_n, 
     penalty_weight) -> tuple:
 
     #--- Initialisations
@@ -212,7 +211,7 @@ def ga(iterations,
         
         #--- Variation
         # Breed new individuals by applying operators
-        new_individuals = generate_variations(parents, mutation_rate, crossover_n)
+        new_individuals = generate_variations(parents, mutation_rate)
         
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
