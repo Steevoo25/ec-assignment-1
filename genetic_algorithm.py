@@ -47,7 +47,7 @@ def calculate_fitnesses(population, penalty_weight):
     
     for solution in population:
         # add penalty for constraint violation
-        fitness = objective_function(solution) - penalty_function(solution, penalty_weight)
+        fitness = objective_function(solution) + penalty_function(solution, penalty_weight)
         fitnesses.append(fitness)
     return fitnesses
     
