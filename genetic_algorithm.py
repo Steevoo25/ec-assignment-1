@@ -56,7 +56,7 @@ def truncation_selection(population, fitnesses, truncation_n):
     return ranked_solutions[:truncation_n]
 
 # 
-def tournament_selection(population, fitnesses, offspring_size, tournament_size):
+def tournament_selection(population, fitnesses, population_size, offspring_size, tournament_size):
     parents = []
     # zip solutions and fitnesses together
     pop_and_fitness = list(zip(population, fitnesses))
@@ -65,7 +65,8 @@ def tournament_selection(population, fitnesses, offspring_size, tournament_size)
     for _ in range(offspring_size):
         tournament = []
         # randomly sample k solutions
-        tournament = [pop_and_fitness[random.randint(0, SOLUTION_SIZE - 1)] for _ in range(tournament_size)]
+        tournament = [pop_and_fitness[random.randint(0, population_size - 1)] for _ in range(tournament_size)]
+        
         # sort the list
         tournament.sort(key = lambda x: x[1])
         parents.append(tournament[0][0])
@@ -144,11 +145,24 @@ def generate_variations(parents, mutation_rate, crossover_n):
     #new_individuals = n_point_crossover(parents, crossover_n)
     return new_individuals
 
-# 
+# Replaces worse-performing solutions in current population with new individuals
 def generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size):
+    
+    #sort population based on fitness
+    sorted_pairs = sorted(list(zip(population, fitnesses)), key= lambda x : x[1])
+    # zip together offspring and their fitnesses
+    new_pairs = zip(new_individuals, new_fitnesses)
+    # relace worse performing individuals with new ones
+    sorted_pairs[-offspring_size:] = new_pairs
+    # seperate out the population and fitnesses
+    population, fitnesses = zip(*sorted_pairs)
+    # convert them from zip to list
+    population = list(population)
+    fitnesses = list(fitnesses)
+    
     # Take alll new individuals and replace with worse individuals in population
-    population[-offspring_size:] = new_individuals
-    fitnesses[-offspring_size:] = new_fitnesses
+    # population[-offspring_size:] = new_individuals
+    # fitnesses[-offspring_size:] = new_fitnesses
     return population, fitnesses
 
 def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n) -> tuple:
@@ -167,7 +181,7 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
     while not termination_flag:
         #--- Selection
         # Select parents from population basen on their fitness
-        parents = tournament_selection(population, fitnesses, offspring_size, tournament_size)
+        parents = tournament_selection(population, fitnesses, population_size, offspring_size, tournament_size)
         #--- Variation
         # Breed new individuals by applying operators
         new_individuals = generate_variations(parents, mutation_rate, crossover_n)
@@ -175,8 +189,11 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         # Evaluate fitness of new individuals
         new_fitnesses = calculate_fitnesses(new_individuals)
         #--- Reproduction
+        # Sort population and fitnesses
+        
         # Generate new populations by replacing least fit individuals
         population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size)
+        
         t +=1
         if t == iterations : termination_flag = True
         
