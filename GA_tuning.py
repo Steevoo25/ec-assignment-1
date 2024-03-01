@@ -1,27 +1,30 @@
 from genetic_algorithm import ga
 from matplotlib import pyplot as plt
 import pandas as pd
+import optuna
 
-
-iterations = 100
-population_list = list(range(50, 550, 5))
-tournament_size = 2
-offspring_size = 20
-crossover_n = 5
-trial_runs = 5
-
-columns = ["solution","fitness","iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "crossover_n" ]
+# Initialse df columns
+columns = ["solution", "fitness", "iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "crossover_n" ]
 df = pd.DataFrame(columns=columns)
 
-for i in range(trial_runs):
-    # edit parameters
-    population_size = population_list[i]
-    mutation_rate = 1 // population_size
-
-    # run GA
+def objective(trial):
+    # Define parameter ranges
+    iterations = trial.suggest_int('iterations', 10, 100)
+    population_size = trial.suggest_int('population_size', 10, 100)
+    mutation_rate = 1 / iterations
+    tournament_size = trial.suggest_int('tournament_size', 2, 10)
+    offspring_size = trial.suggest_int('offspring_size', 3, 20)
+    crossover_n = trial.suggest_int('crossover_', 2, 10)
+    # Compute solution and fitness
     solution, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
-    df.loc[i] = (solution, fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
-    
-df.sort_values(by='fitness')
+    df.loc[trial.number] = (solution, fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n)
+    return fitness
+
+study = optuna.create_study()
+study.optimize(objective, n_trials=100)
+
+print(study.best_params)
+
+df = df.sort_values(by='fitness')
 df.index.name = 'Index'
 print(df)
