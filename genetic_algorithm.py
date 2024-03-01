@@ -38,6 +38,8 @@ def calculate_fitnesses(population):
 def generate_random_solution(solution):
     random_solution = solution.copy()
     random.shuffle(random_solution)
+    while not is_permutation(solution, random_solution):
+        random.shuffle(random_solution)
     return random_solution
 
 # Generates an initial solution population given a sample solution
@@ -182,18 +184,22 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         #--- Selection
         # Select parents from population basen on their fitness
         parents = tournament_selection(population, fitnesses, population_size, offspring_size, tournament_size)
+        
         #--- Variation
         # Breed new individuals by applying operators
         new_individuals = generate_variations(parents, mutation_rate, crossover_n)
+        
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
         new_fitnesses = calculate_fitnesses(new_individuals)
+        
         #--- Reproduction
         # Sort population and fitnesses
         
         # Generate new populations by replacing least fit individuals
         population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size)
-        
+        print(population)
+        print(fitnesses)
         t +=1
         if t == iterations : termination_flag = True
         
