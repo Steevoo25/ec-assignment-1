@@ -2,7 +2,6 @@ import random
 from pickle import load
 import math
 #--- Constants
-
 SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
 
@@ -59,9 +58,7 @@ def P(fitness_old, fitness_new, T) -> float:
         p = math.e**((fitness_old - fitness_new)/T)
         #print(f"p is {p}")
         return p
-
     
-#print(f"Final solution after {k} iterations was: {best_solution} \nwith fitness of {best_fitness}")
 def sa(iterations, initial_temp, cooling_rate):
 
     T = initial_temp    
