@@ -27,7 +27,7 @@ df = pd.DataFrame(columns=columns)
 def objective(trial):
 
     iterations = trial.suggest_int('iterations', 10, 100)
-    initial_temp = trial.suggest_int('initial_temp',10, 50 )
+    initial_temp = trial.suggest_int('initial_temp', 10, 50)
     cooling_rate = trial.suggest_float('cooling_rate', 0.5, 1)
     
     solution, fitness = sa(iterations, initial_temp, cooling_rate)
