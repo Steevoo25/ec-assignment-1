@@ -11,9 +11,13 @@ DATA_FILE = "us_capitals.pkl"
 
 # Checks if a proposed solution is a permutation of the sample soltion, ie. it contains all cities and visits each city once
 def is_permutation(sample_solution : list, proposed_solution: list) -> bool:
-    sample_solution.sort()
-    proposed_solution.sort()
-    return sample_solution == proposed_solution
+    sample_copy = sample_solution.copy()
+    proposed_copy = proposed_solution.copy()
+    
+    sample_copy.sort()
+    proposed_copy.sort()
+    
+    return sample_copy == proposed_copy
     
 # Filters a population removing any that violate constraints
 def check_constraints(sample_solution, population):
@@ -34,12 +38,12 @@ def calculate_fitnesses(population):
         fitnesses.append(objective_function(solution))
     return fitnesses
     
-# Generates a random candidate solution
+# Generates a random candidate solution that does not violate constraints
 def generate_random_solution(solution):
+    # copy original solution
     random_solution = solution.copy()
+    # shuffle it randomly
     random.shuffle(random_solution)
-    while not is_permutation(solution, random_solution):
-        random.shuffle(random_solution)
     return random_solution
 
 # Generates an initial solution population given a sample solution
@@ -152,12 +156,16 @@ def generational_reproduction(population, fitnesses, new_individuals, new_fitnes
     
     #sort population based on fitness
     sorted_pairs = sorted(list(zip(population, fitnesses)), key= lambda x : x[1])
+    
     # zip together offspring and their fitnesses
     new_pairs = zip(new_individuals, new_fitnesses)
+    
     # relace worse performing individuals with new ones
     sorted_pairs[-offspring_size:] = new_pairs
+    
     # seperate out the population and fitnesses
     population, fitnesses = zip(*sorted_pairs)
+    
     # convert them from zip to list
     population = list(population)
     fitnesses = list(fitnesses)
@@ -188,7 +196,6 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         #--- Variation
         # Breed new individuals by applying operators
         new_individuals = generate_variations(parents, mutation_rate, crossover_n)
-        
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
         new_fitnesses = calculate_fitnesses(new_individuals)
@@ -198,12 +205,12 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         
         # Generate new populations by replacing least fit individuals
         population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size)
-        print(population)
-        print(fitnesses)
+        
         t +=1
         if t == iterations : termination_flag = True
         
     # sort population by fitness
     sorted_list = sorted(list(zip(population, fitnesses)), key= lambda x : x[1])
+    #print(len(sorted_list))
     #return first solution that doesnt violate constraints
-    return next(((solution, fitness) for solution, fitness in sorted_list if is_permutation(sample_solution, solution)), None)
+    return next(((solution, fitness) for solution, fitness in sorted_list if is_permutation(sample_solution, solution)), ("No Solution found", 999999))
