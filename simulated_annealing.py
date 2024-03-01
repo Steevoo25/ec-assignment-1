@@ -50,10 +50,12 @@ def neighbour(solution):
     
 # returns the probability that we should move to new solution
 def P(fitness_old, fitness_new, T) -> float:
+    # always move to better solutions
     if fitness_new < fitness_old:
         #print("new is better taking it")
         return 1
     else:
+    # sometimes move to worse solutions
         p = math.e**((fitness_old - fitness_new)/T)
         #print(f"p is {p}")
         return p
@@ -76,7 +78,6 @@ def sa(iterations, initial_temp, cooling_rate):
     
     while (k<iterations):
         T = temperature(T, cooling_rate) # Calculate temperature
-        print(T, cooling_rate)
         proposed_solution = neighbour(solution) # Pick some neighbour
         proposed_fitness = objective_function(solution) # Compute its objective function value
         
