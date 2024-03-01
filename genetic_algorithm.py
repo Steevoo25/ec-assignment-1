@@ -29,13 +29,26 @@ def check_constraints(sample_solution, population):
     
     return filtered_population
     
+def penalty_function(solution, penalty_weight):
+    check_solution = []
+    duplicates = 0
+    # Check for duplicate cities
+    for city in solution:
+        # if a city has appeared already
+        if city in check_solution:
+            duplicates+=1
+        else: # if a city has not appeared already
+            check_solution.append(city)
+        
+    return duplicates * penalty_weight
 # Returns an array of fitnesses aligned to population of solutions
-def calculate_fitnesses(population):
+def calculate_fitnesses(population, penalty_weight):
     fitnesses = []
-    #fitnesses[0] = {'0': (0,0)}
     
     for solution in population:
-        fitnesses.append(objective_function(solution))
+        # add penalty for constraint violation
+        fitness = objective_function(solution) - penalty_function(solution, penalty_weight)
+        fitnesses.append(fitness)
     return fitnesses
     
 # Generates a random candidate solution that does not violate constraints
@@ -61,7 +74,7 @@ def truncation_selection(population, fitnesses, truncation_n):
     ranked_solutions = sorted(pop_and_fitness, key= lambda x : x[1])
     return ranked_solutions[:truncation_n]
 
-# 
+# selects a given number of offspring by creating tournament buckets and keeping the solution with the lowest objective value
 def tournament_selection(population, fitnesses, population_size, offspring_size, tournament_size):
     parents = []
     # zip solutions and fitnesses together
@@ -139,16 +152,14 @@ def mutation(parents, mutation_rate):
     return parents
     
 # Generates new individuals by applying varation operators to parents
-def generate_variations(parents, mutation_rate, crossover_n):
-    # Mutation
-    
+def generate_variations(parents, mutation_rate):
+    # Mutation - random
     new_individuals = mutation(parents, mutation_rate)
     
-    # Crossover
+    # Crossover - Ordered
     for i, _ in enumerate(new_individuals[:-1]):
         new_individuals[i] = ordered_crossover(new_individuals)
 
-    #new_individuals = n_point_crossover(parents, crossover_n)
     return new_individuals
 
 # Replaces worse-performing solutions in current population with new individuals
@@ -175,14 +186,20 @@ def generational_reproduction(population, fitnesses, new_individuals, new_fitnes
     # fitnesses[-offspring_size:] = new_fitnesses
     return population, fitnesses
 
-def ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, crossover_n) -> tuple:
+def ga(iterations, 
+    population_size, 
+    mutation_rate, 
+    tournament_size, 
+    offspring_size, 
+    crossover_n, 
+    penalty_weight) -> tuple:
 
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         sample_solution = pickle.load(file)
     
     population = generate_population(sample_solution, population_size)
-    fitnesses = calculate_fitnesses(population)
+    fitnesses = calculate_fitnesses(population, penalty_weight)
 
     termination_flag = False
     t = 0
@@ -196,13 +213,12 @@ def ga(iterations, population_size, mutation_rate, tournament_size, offspring_si
         #--- Variation
         # Breed new individuals by applying operators
         new_individuals = generate_variations(parents, mutation_rate, crossover_n)
+        
         #--- Fitness Calculation
         # Evaluate fitness of new individuals
-        new_fitnesses = calculate_fitnesses(new_individuals)
+        new_fitnesses = calculate_fitnesses(new_individuals, penalty_weight)
         
         #--- Reproduction
-        # Sort population and fitnesses
-        
         # Generate new populations by replacing least fit individuals
         population, fitnesses = generational_reproduction(population, fitnesses, new_individuals, new_fitnesses, offspring_size)
         
