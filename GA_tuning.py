@@ -21,7 +21,7 @@ def objective(trial):
     return fitness
 
 study = optuna.create_study()
-study.optimize(objective, n_trials=1000)
+study.optimize(objective, n_trials=100)
 
 print(study.best_params)
 
