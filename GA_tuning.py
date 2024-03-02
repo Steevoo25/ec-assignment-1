@@ -21,11 +21,14 @@ def objective(trial):
     return fitness
 
 study = optuna.create_study()
-study.optimize(objective, n_trials=100)
+study.optimize(objective, n_trials=1000)
 
 print(study.best_params)
 
 df = df.sort_values(by='fitness')
 df.index.name = 'Index'
 print(df)
-print("Valid solutions generated: ", len(df[df['fitness']<999999]) )
+df = df[df['fitness']<999999]
+print("Valid solutions generated: ", 100 - len(df))
+print(df.mean())
+print(df.std())
