@@ -65,8 +65,10 @@ def sa(iterations, initial_temp, cooling_rate):
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         solution = load(file)
+        
+    solution = sorted(solution)
     fitness = objective_function(solution)
-
+    
     best_solution = solution
     best_fitness = fitness
 

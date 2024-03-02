@@ -29,6 +29,7 @@ def check_constraints(sample_solution, population):
     
     return filtered_population
     
+# Applies a penalty for each city that appears twice and applies a weighting
 def penalty_function(solution, penalty_weight):
     check_solution = []
     duplicates = 0
@@ -41,6 +42,7 @@ def penalty_function(solution, penalty_weight):
             check_solution.append(city)
         
     return duplicates * penalty_weight
+
 # Returns an array of fitnesses aligned to population of solutions
 def calculate_fitnesses(population, penalty_weight):
     fitnesses = []
@@ -63,7 +65,7 @@ def generate_random_solution(solution):
 def generate_population(solution, population_size):
     population = []
     for _ in range(population_size):
-        population.append(generate_random_solution(solution))
+        population.append(neighbour(solution))
     return population
 
 # Selects a subset of parents given their fitness values
@@ -143,8 +145,7 @@ def ordered_crossover(parents):
     offspring[point1:point2] = parent2[point1:point2]
     return offspring
     
-# Applies the mutation variation operator
-# swaps each location with a random location with probability P_m
+# Each parent has probability 1/m of having 2 random cities swapped
 def mutation(parents, mutation_rate):
     for solution in parents:
         if random.uniform(0,1) < mutation_rate:
@@ -196,7 +197,8 @@ def ga(iterations,
     #--- Initialisations
     with open(DATA_FILE, "rb") as file:
         sample_solution = pickle.load(file)
-    
+        
+    sample_solution = sorted(sample_solution)
     population = generate_population(sample_solution, population_size)
     fitnesses = calculate_fitnesses(population, penalty_weight)
 
