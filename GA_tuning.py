@@ -4,7 +4,7 @@ import pandas as pd
 import optuna
 
 # Initialse df columns
-columns = ["solution", "fitness", "iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "penalty_weight" ]
+columns = ["fitness", "iterations", "population_size", "mutation_rate", "tournament_size", "offspring_size", "penalty_weight" ]
 df = pd.DataFrame(columns=columns)
 
 def objective(trial):
@@ -14,14 +14,14 @@ def objective(trial):
     mutation_rate = 1 / iterations
     tournament_size = trial.suggest_int('tournament_size', 2, 10)
     offspring_size = trial.suggest_int('offspring_size', 3, 20)
-    penalty_weight = trial.suggest_int('penalty_weight', 1, 5 ) # higher means more penalty
+    penalty_weight = trial.suggest_int('penalty_weight', 1, 50 ) # higher means more penalty
     # Compute solution and fitness
-    solution, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight)
-    df.loc[trial.number] = (solution, fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight)
+    _, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight)
+    df.loc[trial.number] = (fitness, iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight)
     return fitness
 
 study = optuna.create_study()
-study.optimize(objective, n_trials=100)
+study.optimize(objective, n_trials=1000)
 
 print(study.best_params)
 
