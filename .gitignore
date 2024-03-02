@@ -8,3 +8,5 @@ __pycache__/
 *.cpython-38
 *.cpython-38.pyc
 flowcharts/
+*.tmp
+~$*.docx
