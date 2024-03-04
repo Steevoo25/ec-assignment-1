@@ -2,7 +2,7 @@ import math
 import random
 import pickle
 from simulated_annealing import objective_function, neighbour
-
+import pandas as pd
 #--- Constants
 SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
@@ -231,3 +231,34 @@ def ga(iterations,
     #print(len(sorted_list))
     #return first solution that doesnt violate constraints
     return next(((solution, fitness) for solution, fitness in sorted_list if is_permutation(sample_solution, solution)), ("No Solution found", 999999))
+    
+def run_best_params(iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight) -> None:
+    columns = ["solution", "fitness"]
+    # Initialise df columns
+    df = pd.DataFrame(columns=columns)
+    
+    for i in range(30):
+        solution, fitness = ga(iterations, population_size, mutation_rate, tournament_size, offspring_size, penalty_weight)
+        df.iloc[i] = solution, fitness
+        
+    df = df.sort_values(by='fitness')
+    print(df)
+    # Save to csv
+    return
+    
+if __name__ == "__main__":
+    # Update with results from study
+    OPT_ITERATIONS = 107
+    OPT_POP_SIZE = 107
+    OPT_MUT_RATE = 107
+    OPT_TOURN_SIZE = 107
+    OPT_OFFSPRING_SIZE = 107
+    OPT_PENALTY_WEIGHT = 107
+
+
+    print(f"Running Genetic Algorithm with parameters:\nIterations: {OPT_ITERATIONS}, Population Size, ")
+    run_best_params(OPT_ITERATIONS, OPT_POP_SIZE, OPT_MUT_RATE, OPT_TOURN_SIZE, OPT_OFFSPRING_SIZE, OPT_PENALTY_WEIGHT)
+    
+
+
+
