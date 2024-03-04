@@ -113,7 +113,7 @@ def run_best_params(iterations, initial_temp, cooling_rate):
 
 if __name__ == "__main__":
     # Update with results from study
-    OPT_ITERATIONS = 107
+    OPT_ITERATIONS = 10000
     OPT_INIT_TEMP = 1131
     OPT_COOL_RATE = 0.95
 
