@@ -1,6 +1,7 @@
 import random
 from pickle import load
 import math
+import pandas as pd
 #--- Constants
 SOLUTION_SIZE = 47
 DATA_FILE = "us_capitals.pkl"
@@ -41,9 +42,8 @@ def neighbour(solution):
     rand1 = random.randint(1,SOLUTION_SIZE)
     rand2 = random.randint(1,SOLUTION_SIZE)
     
-    temp = neighbour_solution[rand1]
-    neighbour_solution[rand1] = neighbour_solution[rand2]
-    neighbour_solution[rand2] = temp
+    # swap 2 cities
+    neighbour_solution[rand1], neighbour_solution[rand2] = neighbour_solution[rand2] ,neighbour_solution[rand1]
     #print(f"Swapped locations {rand1} and {rand2}")
     return neighbour_solution
     
@@ -66,7 +66,7 @@ def sa(iterations, initial_temp, cooling_rate):
     with open(DATA_FILE, "rb") as file:
         solution = load(file)
         
-    solution = sorted(solution)
+    #solution = sorted(solution)
     fitness = objective_function(solution)
     
     best_solution = solution
@@ -77,6 +77,7 @@ def sa(iterations, initial_temp, cooling_rate):
     
     while (k<iterations):
         T = temperature(T, cooling_rate) # Calculate temperature
+
         proposed_solution = neighbour(solution) # Pick some neighbour
         proposed_fitness = objective_function(solution) # Compute its objective function value
         
@@ -87,5 +88,34 @@ def sa(iterations, initial_temp, cooling_rate):
         if proposed_fitness < best_fitness: # Is this a new best
             best_solution = proposed_solution # Update best found
             best_fitness = proposed_fitness
+            
         k +=1
+
+        if T < 0.0001 : return best_solution, best_fitness
+
     return best_solution, best_fitness
+
+
+def run_best_params(iterations, initial_temp, cooling_rate):
+
+    columns = ["solution", "fitness"]
+
+    # Initialise df columns
+    df = pd.DataFrame(columns=columns)
+    for i in range(30):
+        solution, fitness = sa(iterations, initial_temp, cooling_rate)
+        df.loc[i] = (solution, fitness)
+    df = df.sort_values(by='fitness')
+    print(df)
+    # save to csv
+    return
+
+if __name__ == "__main__":
+    # Update with results from study
+    OPT_ITERATIONS = 107
+    OPT_INIT_TEMP = 1131
+    OPT_COOL_RATE = 0.95
+
+    print(f"Running Simulated Annealing with parameters:\nIterations: {OPT_ITERATIONS}, Initial Temperature: {OPT_INIT_TEMP}, Cooling Rate: {OPT_COOL_RATE}")
+    run_best_params(OPT_ITERATIONS, OPT_INIT_TEMP, OPT_COOL_RATE)
+    
