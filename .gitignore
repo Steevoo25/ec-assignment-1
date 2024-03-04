@@ -11,3 +11,5 @@ flowcharts/
 *.tmp
 ~$*.docx
 Data/
+venv/
+Final/
