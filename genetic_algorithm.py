@@ -1,4 +1,3 @@
-import math
 import random
 import pickle
 from simulated_annealing import objective_function, neighbour
@@ -198,7 +197,7 @@ def ga(iterations,
     with open(DATA_FILE, "rb") as file:
         sample_solution = pickle.load(file)
         
-    sample_solution = sorted(sample_solution)
+    #sample_solution = sorted(sample_solution)
     population = generate_population(sample_solution, population_size)
     fitnesses = calculate_fitnesses(population, penalty_weight)
 
@@ -260,6 +259,3 @@ if __name__ == "__main__":
     print(f"Running Genetic Algorithm with parameters:\nIterations: {OPT_ITERATIONS}, Population Size: {OPT_POP_SIZE}, Mutation Rate: {OPT_MUT_RATE}, Tournament Size: {OPT_TOURN_SIZE}, Offspring Size: {OPT_OFFSPRING_SIZE}, Penalty Weight: {OPT_PENALTY_WEIGHT} ")
     run_best_params(OPT_ITERATIONS, OPT_POP_SIZE, OPT_MUT_RATE, OPT_TOURN_SIZE, OPT_OFFSPRING_SIZE, OPT_PENALTY_WEIGHT)
     
-
-
-
