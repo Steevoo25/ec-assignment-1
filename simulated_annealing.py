@@ -107,6 +107,7 @@ def run_best_params(iterations, initial_temp, cooling_rate):
         df.loc[i] = (solution, fitness)
     df = df.sort_values(by='fitness')
     print(df)
+    df.to_csv('./Data/Simulated_Annealing.csv')
     # save to csv
     return
 
