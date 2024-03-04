@@ -12,7 +12,7 @@ df = pd.DataFrame(columns=columns)
 # Returns fitness of SA with randomly generated parameters
 def objective(trial):
     # Define parameter ranges
-    iterations = trial.suggest_int('iterations', 1, 10)
+    iterations = trial.suggest_int('iterations', 1000, 1000)
     initial_temp = trial.suggest_int('initial_temp', 800, 1200)
     cooling_rate = trial.suggest_float('cooling_rate', 0.8, 0.99)
     # Perform SA
